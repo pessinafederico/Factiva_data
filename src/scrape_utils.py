@@ -9,8 +9,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import os
 import csv
+import logging
 
 driver = None
+
+# Define function to wait for an element to be clickable
+def wait_and_get_element(driver, by, value, timeout=10):
+    return WebDriverWait(driver, timeout).until(
+        EC.element_to_be_clickable((by, value))
+    )
 
 # Define function to initialize the Selenium WebDriver
 def init_driver():
@@ -23,14 +30,14 @@ def init_driver():
     remote_debugging_port = "9222"
     factiva_url = "https://librarysearch.lse.ac.uk/discovery/fulldisplay?vid=44LSE_INST:44LSE_VU1&tab=Everything&docid=alma99129371110302021&context=L&search_scope=MyInstitution&lang=en"
 
+    logging.info("Launching Chrome browser with remote debugging...")
     subprocess.Popen([
         chrome_path,
         f"--remote-debugging-port={remote_debugging_port}",
         f"--user-data-dir={user_data_dir}",
         factiva_url
     ])
-
-    print("Chrome launched. Log in manually, then press Enter to continue...")
+    logging.info("Chrome launched. Log in manually, then press Enter to continue...")
     input()
 
     options = Options()
@@ -39,10 +46,16 @@ def init_driver():
     options.add_argument("--log-level=3")  # ERROR level
     options.add_argument("--silent")
     options.add_argument("--disable-logging")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-software-rasterizer")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
 
     # Set service with suppressed output
-    service = Service("/opt/homebrew/bin/chromedriver", log_path=os.devnull)
+    logging.info("Setting up ChromeDriver service...")
+    service = Service("/opt/homebrew/bin/chromedriver", log_path=os.devnull, log_output=os.devnull)
     driver = webdriver.Chrome(service=service, options=options)
+    logging.info("Connected to ChromeDriver via remote debugging.")
 
     time.sleep(3)
     return driver
@@ -57,6 +70,7 @@ def change_date_range(driver, start_date, end_date):
         start_date (str): Start date in 'YYYY-MM-DD' format.
         end_date (str): End date in 'YYYY-MM-DD' format.
     '''
+    logging.info(f"Setting date range: {start_date} to {end_date}")
     start_year, start_month, start_day = start_date.split('-')
     end_year, end_month, end_day = end_date.split('-')
     
@@ -65,6 +79,7 @@ def change_date_range(driver, start_date, end_date):
     # Select "Custom" date range
     select = Select(driver.find_element(By.ID, "dr"))
     select.select_by_visible_text("Enter date range...")
+    logging.info("Selected 'Enter date range...' option")
     time.sleep(1.5)
 
     # Fill in "From" date fields
@@ -86,6 +101,7 @@ def change_date_range(driver, start_date, end_date):
 
     driver.find_element(By.ID, 'toy').clear()
     driver.find_element(By.ID, 'toy').send_keys(end_year)
+    logging.info("Date range fields updated")
 
 # Define function to change language to english only
 def change_language(driver):
@@ -95,15 +111,18 @@ def change_language(driver):
     Args:
         driver (webdriver): Selenium WebDriver instance.
     '''
+    logging.info("Setting language to English")
     time.sleep(4)
     driver.find_element(By.ID, "laTab").click()
     time.sleep(4)
     english_link = driver.find_element(By.XPATH, "//a[text()='English' and @class='mnuItm']")
     driver.execute_script("arguments[0].click();", english_link)
+    logging.info("Language set to English")
 
 # Define function to change region
 def change_region(driver):
     #### Change region ####
+    logging.info("Setting region to United Kingdom")
     time.sleep(4)
     driver.find_element(By.XPATH, "//a[text()='Region' and contains(@class, 'fesTabLinkFix')]").click()
     time.sleep(4)
@@ -121,6 +140,7 @@ def change_region(driver):
     # 4 find uk in list and click it
     driver.find_element(By.XPATH, "//a[text()='United Kingdom' and contains(@class, 'mnuItm')]").click()
     time.sleep(4)
+    logging.info("Region set to United Kingdom")
 
 # Internal function to add a subject
 def add_subject(subject_name):
@@ -133,15 +153,16 @@ def add_subject(subject_name):
     # Try clicking suggestion (strong) first
     try:
         driver.find_element(By.XPATH, f"//strong[text()='{subject_name}']/ancestor::td").click()
-        print(f"Selected via suggestion: {subject_name}")
+        logging.info(f"Selected via suggestion: {subject_name}")
     except:
         # Fallback: click direct <a> tag
         driver.find_element(By.XPATH, f"//a[text()='{subject_name}' and contains(@class, 'mnuItm')]").click()
-        print(f"Selected via <a>: {subject_name}")
+        logging.info(f"Selected via <a>: {subject_name}")
     time.sleep(4)
  
 # Define function to change subject
 def change_subject(driver):
+    logging.info("Adding subjects...")
     subjects_to_add = [
     "Commodity/Financial Market News",
     "Corporate/Industrial News",
@@ -159,9 +180,11 @@ def change_subject(driver):
     # Close the Subject tab by clicking it again
     driver.find_element(By.XPATH, "//a[text()='Subject' and contains(@class, 'fesTabLinkFix')]").click()
     time.sleep(4)
+    logging.info("Subjects added")
 
 # Define function other minor settings
 def other_settings(driver):
+    logging.info("Setting other search parameters")
     time.sleep(2)
     # Add key search terms in search box at the top
     driver.execute_script("""
@@ -178,9 +201,11 @@ def other_settings(driver):
     if not checkbox.is_selected():
         checkbox.click()
         time.sleep(4)
+    logging.info("Other search parameters set")
         
 # Function to define industry
 def change_industry(driver, industry):
+    logging.info(f"Changing industry to {industry}")
     #### Industry ####
     driver.find_element(By.XPATH, "//a[text()='Industry' and contains(@class, 'fesTabLinkFix')]").click()
     time.sleep(4)
@@ -198,39 +223,42 @@ def change_industry(driver, industry):
     # 4. Click the search result matching the industry name
     driver.find_element(By.XPATH, f"//a[text()='{industry}' and contains(@class, 'mnuItm')]").click()
     time.sleep(4)
+    logging.info(f"Industry set to {industry}")
 
 # Function to define industry ad remove old when it changes
 def change_industry_remove_old(driver, industry,last_industry):
+    logging.info(f"Changing industry to {industry}")
+    
+    time.sleep(2)
     #### Industry ####
-    driver.find_element(By.XPATH, "//a[text()='Industry' and contains(@class, 'fesTabLinkFix')]").click()
+    wait_and_get_element(driver, By.XPATH, "//a[text()='Industry' and contains(@class, 'fesTabLinkFix')]").click()
     time.sleep(4)
 
     # 2. Type the industry name in the input box
-    industry_input = driver.find_element(By.ID, "inTxt")
+    industry_input = wait_and_get_element(driver, By.ID, "inTxt")
     industry_input.clear()
     industry_input.send_keys(industry)
     time.sleep(4)
 
     # 3. Click the blue play/search icon
-    driver.find_element(By.ID, "inLkp").click()
+    wait_and_get_element(driver, By.ID, "inLkp").click()
     time.sleep(4)
 
     # 4. Click the search result matching the industry name
-    driver.find_element(By.XPATH, f"//a[text()='{industry}' and contains(@class, 'mnuItm')]").click()
+    wait_and_get_element(driver, By.XPATH, f"//a[text()='{industry}' and contains(@class, 'mnuItm')]").click()
     time.sleep(4)
     
-    try:
-        # Click remove icon next to the old industry
-        old_industry_remove_btn = driver.find_element(
-            By.XPATH, f"//span[text()='{last_industry}']/following-sibling::a[contains(@class, 'rmv')]"
-        )
-        old_industry_remove_btn.click()
-        time.sleep(2)
-    except Exception as e:
-        print(f"⚠️ Could not remove old industry '{last_industry}': {e}")
+    logging.info(f"Removing old industry {last_industry}")
+    old_label = wait_and_get_element(driver, By.XPATH, f"//span[text()='{last_industry}' and contains(@class, 'filterText')]")
+    old_label.click()
+    time.sleep(1)
 
+    # Click the adjacent 'Remove' button that appears in dropdown
+    remove_button = wait_and_get_element(driver, By.XPATH, "//span[text()='Remove']")
+    remove_button.click()
+    time.sleep(2)
+    logging.info(f"Old industry {last_industry} removed")
 
-    
 # Define function to click search button
 def click_search_button(driver):
     '''
@@ -239,13 +267,16 @@ def click_search_button(driver):
     Args:
         driver (webdriver): Selenium WebDriver instance.
     '''
+    logging.info("Clicking search button")
     # Click the search button at the bottom
     time.sleep(4)
     driver.find_element(By.XPATH, '//*[@id="btnSearchBottom"]').click()
     time.sleep(7)
+    logging.info("Search button clicked")
 
 # Function to get results and export
 def get_results_and_export(driver,industry,base_folder,start_date, end_date):
+    logging.info("Extracting and saving results")
     # Extract rows from the summary table
     summary_data = driver.find_elements(By.XPATH, "//tbody/tr[td[@class='label']]")
 
@@ -279,6 +310,7 @@ def get_results_and_export(driver,industry,base_folder,start_date, end_date):
         writer.writerow(summary_dict)
     
     time.sleep(4)
+    logging.info(f"Results saved to {csv_path}")
 
 # Function to click modify search button
 def click_modify_search_button(driver):
@@ -288,9 +320,11 @@ def click_modify_search_button(driver):
     Args:
         driver (webdriver): Selenium WebDriver instance.
     '''
+    logging.info("Clicking modify search button")
     time.sleep(4)
     driver.find_element(By.XPATH, '//*[@id="btnModifySearch"]').click()
     time.sleep(4)
+    logging.info("Modify search button clicked")
         
 # Main function with all tasks
 def run_scraper_tasks(industry, 
@@ -303,12 +337,13 @@ def run_scraper_tasks(industry,
     Main function
     Run the scraper tasks for each industry and date range.
     '''
+    logging.info(f"Starting scraper task for {industry} from {start_date} to {end_date}")
     
     # Initialize the WebDriver
     driver = init_driver()
     
     if first_iteration:
-       
+        logging.info("First iteration: performing full setup")
         # Change the date range
         change_date_range(driver,start_date,end_date)
         
@@ -335,13 +370,16 @@ def run_scraper_tasks(industry,
         
         # Click modify search button
         click_modify_search_button(driver)
+        logging.info("First iteration setup complete")
         
     else:
+        logging.info("Subsequent iteration: updating parameters")
         # If not the first iteration, just change the date
         change_date_range(driver, start_date, end_date)
         
         # Change industry if it has changed
         if industry != last_industry:
+            logging.info(f"Changing industry from {last_industry} to {industry}")
             change_industry_remove_old(driver, industry,last_industry)
         
         # Click search button
@@ -352,9 +390,6 @@ def run_scraper_tasks(industry,
         
         # Click modify search button
         click_modify_search_button(driver)
-        
+        logging.info("Subsequent iteration update complete")
     
-    
-    
-    
-    
+    logging.info(f"Completed task for {industry} from {start_date} to {end_date}")

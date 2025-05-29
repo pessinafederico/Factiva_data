@@ -1,0 +1,141 @@
+2025-05-29 10:22:36 [INFO] Starting scraper tasks for 10 pending tasks.
+2025-05-29 10:22:36 [INFO] Running task for industry: Healthcare/Life Sciences, from 2014-01-06 to 2014-01-13
+2025-05-29 10:22:36 [INFO] Starting scraper task for Healthcare/Life Sciences from 2014-01-06 to 2014-01-13
+2025-05-29 10:22:36 [INFO] Launching Chrome browser with remote debugging...
+2025-05-29 10:22:36 [INFO] Chrome launched. Log in manually, then press Enter to continue...
+2025-05-29 10:23:09 [INFO] Setting up ChromeDriver service...
+2025-05-29 10:23:09 [INFO] Connected to ChromeDriver via remote debugging.
+2025-05-29 10:23:12 [INFO] First iteration: performing full setup
+2025-05-29 10:23:12 [INFO] Setting date range: 2014-01-06 to 2014-01-13
+2025-05-29 10:23:16 [INFO] Selected 'Enter date range...' option
+2025-05-29 10:23:18 [INFO] Date range fields updated
+2025-05-29 10:23:18 [INFO] Setting language to English
+2025-05-29 10:23:26 [INFO] Language set to English
+2025-05-29 10:23:26 [INFO] Setting region to United Kingdom
+2025-05-29 10:23:47 [INFO] Region set to United Kingdom
+2025-05-29 10:23:47 [INFO] Adding subjects...
+2025-05-29 10:23:55 [INFO] Selected via suggestion: Commodity/Financial Market News
+2025-05-29 10:24:03 [INFO] Selected via suggestion: Corporate/Industrial News
+2025-05-29 10:24:11 [INFO] Selected via suggestion: Economic News
+2025-05-29 10:24:19 [INFO] Subjects added
+2025-05-29 10:24:19 [INFO] Setting other search parameters
+2025-05-29 10:24:29 [INFO] Other search parameters set
+2025-05-29 10:24:29 [INFO] Changing industry to Healthcare/Life Sciences
+2025-05-29 10:24:46 [INFO] Industry set to Healthcare/Life Sciences
+2025-05-29 10:24:46 [INFO] Clicking search button
+2025-05-29 10:24:57 [INFO] Search button clicked
+2025-05-29 10:24:57 [INFO] Extracting and saving results
+2025-05-29 10:25:01 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/factiva_results/Healthcare_Life Sciences/2014-01-06_to_2014-01-13.csv
+2025-05-29 10:25:01 [INFO] Clicking modify search button
+2025-05-29 10:25:09 [INFO] Modify search button clicked
+2025-05-29 10:25:09 [INFO] First iteration setup complete
+2025-05-29 10:25:09 [INFO] Completed task for Healthcare/Life Sciences from 2014-01-06 to 2014-01-13
+2025-05-29 10:25:09 [INFO] Starting scraper tasks for 9 pending tasks.
+2025-05-29 10:25:09 [INFO] Running task for industry: Industrial Goods, from 2014-01-06 to 2014-01-13
+2025-05-29 10:25:09 [INFO] Starting scraper task for Industrial Goods from 2014-01-06 to 2014-01-13
+2025-05-29 10:25:09 [INFO] Subsequent iteration: updating parameters
+2025-05-29 10:25:09 [INFO] Setting date range: 2014-01-06 to 2014-01-13
+2025-05-29 10:25:13 [INFO] Selected 'Enter date range...' option
+2025-05-29 10:25:15 [INFO] Date range fields updated
+2025-05-29 10:25:15 [INFO] Changing industry from Healthcare/Life Sciences to Industrial Goods
+2025-05-29 10:25:15 [INFO] Changing industry to Industrial Goods
+2025-05-29 10:25:31 [INFO] Removing old industry Healthcare/Life Sciences
+2025-05-29 10:25:34 [INFO] Old industry Healthcare/Life Sciences removed
+2025-05-29 10:25:34 [INFO] Clicking search button
+2025-05-29 10:25:46 [INFO] Search button clicked
+2025-05-29 10:25:46 [INFO] Extracting and saving results
+2025-05-29 10:25:50 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/factiva_results/Industrial Goods/2014-01-06_to_2014-01-13.csv
+2025-05-29 10:25:50 [INFO] Clicking modify search button
+2025-05-29 10:25:58 [INFO] Modify search button clicked
+2025-05-29 10:25:58 [INFO] Subsequent iteration update complete
+2025-05-29 10:25:58 [INFO] Completed task for Industrial Goods from 2014-01-06 to 2014-01-13
+2025-05-29 10:25:58 [INFO] Starting scraper tasks for 8 pending tasks.
+2025-05-29 10:25:58 [INFO] Running task for industry: Leisure/Arts/Hospitality, from 2014-01-06 to 2014-01-13
+2025-05-29 10:25:58 [INFO] Starting scraper task for Leisure/Arts/Hospitality from 2014-01-06 to 2014-01-13
+2025-05-29 10:25:58 [INFO] Subsequent iteration: updating parameters
+2025-05-29 10:25:58 [INFO] Setting date range: 2014-01-06 to 2014-01-13
+2025-05-29 10:26:02 [INFO] Selected 'Enter date range...' option
+2025-05-29 10:26:04 [INFO] Date range fields updated
+2025-05-29 10:26:04 [INFO] Changing industry from Industrial Goods to Leisure/Arts/Hospitality
+2025-05-29 10:26:04 [INFO] Changing industry to Leisure/Arts/Hospitality
+2025-05-29 10:26:08 [ERROR] Error processing task for Leisure/Arts/Hospitality from 2014-01-06 to 2014-01-13: Message: element not interactable
+  (Session info: chrome=137.0.7151.41)
+Stacktrace:
+0   chromedriver                        0x00000001055083e0 cxxbridge1$str$ptr + 2829900
+1   chromedriver                        0x00000001055006a8 cxxbridge1$str$ptr + 2797844
+2   chromedriver                        0x000000010503de30 cxxbridge1$string$len + 89744
+3   chromedriver                        0x000000010507ccfc cxxbridge1$string$len + 347484
+4   chromedriver                        0x000000010507a9a0 cxxbridge1$string$len + 338432
+5   chromedriver                        0x00000001050c6044 cxxbridge1$string$len + 647332
+6   chromedriver                        0x00000001050793f8 cxxbridge1$string$len + 332888
+7   chromedriver                        0x00000001054cc804 cxxbridge1$str$ptr + 2585200
+8   chromedriver                        0x00000001054cfad4 cxxbridge1$str$ptr + 2598208
+9   chromedriver                        0x00000001054addd8 cxxbridge1$str$ptr + 2459716
+10  chromedriver                        0x00000001054d034c cxxbridge1$str$ptr + 2600376
+11  chromedriver                        0x000000010549f664 cxxbridge1$str$ptr + 2400464
+12  chromedriver                        0x00000001054f02b0 cxxbridge1$str$ptr + 2731292
+13  chromedriver                        0x00000001054f043c cxxbridge1$str$ptr + 2731688
+14  chromedriver                        0x00000001055002f4 cxxbridge1$str$ptr + 2796896
+15  libsystem_pthread.dylib             0x0000000182b6ec0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x0000000182b69b80 thread_start + 8
+Traceback (most recent call last):
+  File "/Users/federicopessina/Repos/Factiva_data/main/factiva_scraper.py", line 96, in <module>
+    run_scraper_tasks(industry,
+  File "/Users/federicopessina/Repos/Factiva_data/src/scrape_utils.py", line 375, in run_scraper_tasks
+    change_industry_remove_old(driver, industry,last_industry)
+  File "/Users/federicopessina/Repos/Factiva_data/src/scrape_utils.py", line 231, in change_industry_remove_old
+    industry_input.clear()
+  File "/Users/federicopessina/repos/data_science_env/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py", line 156, in clear
+    self._execute(Command.CLEAR_ELEMENT)
+  File "/Users/federicopessina/repos/data_science_env/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py", line 574, in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/federicopessina/repos/data_science_env/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 447, in execute
+    self.error_handler.check_response(response)
+  File "/Users/federicopessina/repos/data_science_env/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.ElementNotInteractableException: Message: element not interactable
+  (Session info: chrome=137.0.7151.41)
+Stacktrace:
+0   chromedriver                        0x00000001055083e0 cxxbridge1$str$ptr + 2829900
+1   chromedriver                        0x00000001055006a8 cxxbridge1$str$ptr + 2797844
+2   chromedriver                        0x000000010503de30 cxxbridge1$string$len + 89744
+3   chromedriver                        0x000000010507ccfc cxxbridge1$string$len + 347484
+4   chromedriver                        0x000000010507a9a0 cxxbridge1$string$len + 338432
+5   chromedriver                        0x00000001050c6044 cxxbridge1$string$len + 647332
+6   chromedriver                        0x00000001050793f8 cxxbridge1$string$len + 332888
+7   chromedriver                        0x00000001054cc804 cxxbridge1$str$ptr + 2585200
+8   chromedriver                        0x00000001054cfad4 cxxbridge1$str$ptr + 2598208
+9   chromedriver                        0x00000001054addd8 cxxbridge1$str$ptr + 2459716
+10  chromedriver                        0x00000001054d034c cxxbridge1$str$ptr + 2600376
+11  chromedriver                        0x000000010549f664 cxxbridge1$str$ptr + 2400464
+12  chromedriver                        0x00000001054f02b0 cxxbridge1$str$ptr + 2731292
+13  chromedriver                        0x00000001054f043c cxxbridge1$str$ptr + 2731688
+14  chromedriver                        0x00000001055002f4 cxxbridge1$str$ptr + 2796896
+15  libsystem_pthread.dylib             0x0000000182b6ec0c _pthread_start + 136
+16  libsystem_pthread.dylib             0x0000000182b69b80 thread_start + 8
+
+2025-05-29 10:26:08 [INFO] Starting scraper tasks for 8 pending tasks.
+2025-05-29 10:26:08 [INFO] Running task for industry: Leisure/Arts/Hospitality, from 2014-01-06 to 2014-01-13
+2025-05-29 10:26:08 [INFO] Starting scraper task for Leisure/Arts/Hospitality from 2014-01-06 to 2014-01-13
+2025-05-29 10:26:08 [INFO] Subsequent iteration: updating parameters
+2025-05-29 10:26:08 [INFO] Setting date range: 2014-01-06 to 2014-01-13
+2025-05-29 10:26:12 [INFO] Selected 'Enter date range...' option
+2025-05-29 10:26:14 [INFO] Date range fields updated
+2025-05-29 10:26:14 [INFO] Changing industry from Industrial Goods to Leisure/Arts/Hospitality
+2025-05-29 10:26:14 [INFO] Changing industry to Leisure/Arts/Hospitality
+2025-05-29 10:26:30 [INFO] Removing old industry Industrial Goods
+2025-05-29 10:26:33 [INFO] Old industry Industrial Goods removed
+2025-05-29 10:26:33 [INFO] Clicking search button
+2025-05-29 10:26:45 [INFO] Search button clicked
+2025-05-29 10:26:45 [INFO] Extracting and saving results
+2025-05-29 10:26:49 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/factiva_results/Leisure_Arts_Hospitality/2014-01-06_to_2014-01-13.csv
+2025-05-29 10:26:49 [INFO] Clicking modify search button
+2025-05-29 10:26:57 [INFO] Modify search button clicked
+2025-05-29 10:26:57 [INFO] Subsequent iteration update complete
+2025-05-29 10:26:57 [INFO] Completed task for Leisure/Arts/Hospitality from 2014-01-06 to 2014-01-13
+2025-05-29 10:26:57 [INFO] Starting scraper tasks for 7 pending tasks.
+2025-05-29 10:26:57 [INFO] Running task for industry: Media/Entertainment, from 2014-01-06 to 2014-01-13
+2025-05-29 10:26:57 [INFO] Starting scraper task for Media/Entertainment from 2014-01-06 to 2014-01-13
+2025-05-29 10:26:57 [INFO] Subsequent iteration: updating parameters
+2025-05-29 10:26:57 [INFO] Setting date range: 2014-01-06 to 2014-01-13

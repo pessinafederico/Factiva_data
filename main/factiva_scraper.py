@@ -5,9 +5,12 @@
 import pandas as pd
 import os 
 import sys
+import logging
+import csv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from setup_utils import initialize_and_select_tasks
 from scrape_utils import run_scraper_tasks
+from datetime import datetime
 
 # ------------------------------- 
 # SETTINGS
@@ -44,6 +47,14 @@ start_date = "2014-01-01"
 end_date = "2014-01-15"
 granularity = "weekly"
 
+log_filename = f"logs/scraper_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+logging.basicConfig(
+    filename=log_filename,
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
 # -------------------------------
 # INITIALIZE
 # -------------------------------
@@ -61,7 +72,6 @@ tasks_pending_list, tasks_list = initialize_and_select_tasks(
 # START LOOP SCRAPER
 # --------------------------------------
 
-
 first_iteration = True
 last_industry = None
     
@@ -70,7 +80,7 @@ while True:
     if tasks_pending_list.empty:
         print("All tasks completed. Exiting.")
         break
-    print(f"Starting scraper tasks for {len(tasks_pending_list)} pending tasks.")
+    logging.info(f"Starting scraper tasks for {len(tasks_pending_list)} pending tasks.")
     
     # Pick first pending task
     current_task = tasks_pending_list.iloc[0]
@@ -78,7 +88,7 @@ while True:
     start_date = current_task['start_date']
     end_date = current_task['end_date']
     
-    print(f"Running task for industry: {industry}, from {start_date} to {end_date}")
+    logging.info(f"Running task for industry: {industry}, from {start_date} to {end_date}")
     
     # Run task
     try:
@@ -99,7 +109,8 @@ while True:
         last_industry = industry
         
     except Exception as e:
-        print(e)
+        logging.error(f"Error processing task for {industry} from {start_date} to {end_date}: {e}", exc_info=True)
+        #logging.error(e)
         # Update task status to failed
         tasks_list.loc[
             (tasks_list["industry"] == industry) &
