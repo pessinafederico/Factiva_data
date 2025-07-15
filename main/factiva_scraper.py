@@ -9,6 +9,7 @@ import logging
 import csv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from setup_utils import initialize_and_select_tasks
+from setup_utils import update_task_status
 from scrape_utils import run_scraper_tasks
 from datetime import datetime
 
@@ -93,13 +94,18 @@ tasks_pending_list, tasks_list = initialize_and_select_tasks(
 first_iteration = True
 last_industry = None
 last_subfocus = None
+
+current_task_number = 1
+total_tasks = len(tasks_pending_list)
+print(f"🚀 Starting scraper with {total_tasks} total tasks")
     
 while True:
+    
     
     if tasks_pending_list.empty:
         print("All tasks completed. Exiting.")
         break
-    logging.info(f"Starting scraper tasks for {len(tasks_pending_list)} pending tasks.")
+    #logging.info(f"Starting scraper tasks for {len(tasks_pending_list)} pending tasks.")
     
     # print("📋 First 5 rows of task file:")
     # print(tasks_list.head())
@@ -112,6 +118,8 @@ while True:
     task_end_date = current_task['end_date']
     
     logging.info(f"Running task for industry: {industry} and subfocus: {subfocus}, from {task_start_date} to {task_end_date}")
+    print(f"🔄 Task {current_task_number}/{total_tasks}: {industry}/{subfocus or 'All'} ({task_start_date} to {task_end_date})")
+    logging.info(f"Task {current_task_number}/{total_tasks}: {industry}/{subfocus} {task_start_date}-{task_end_date}")
 
     # # DEBUG: Print current task details
     # print(f"🔍 DEBUG - Current task:")
@@ -151,27 +159,15 @@ while True:
                           first_iteration,
                           DATA_SAVE_FOLDER)
         
-         # Update task status to completed 
-        if subfocus is None:
-            # Match against NaN/null values in the CSV
-            mask = (
-                (tasks_list["industry"] == industry) &
-                (pd.isna(tasks_list["subfocus"])) &  # This matches NaN values
-                (tasks_list["start_date"] == task_start_date) &
-                (tasks_list["end_date"] == task_end_date)
-            )
-        else:
-            # Match against actual subfocus values
-            mask = (
-                (tasks_list["industry"] == industry) &
-                (tasks_list["subfocus"] == subfocus) &
-                (tasks_list["start_date"] == task_start_date) &
-                (tasks_list["end_date"] == task_end_date)
-            )
+        # Update task status to completed
+        update_task_status(tasks_list, industry, subfocus, task_start_date, task_end_date, 1)
         
         print(f"✅ Task completed successfully for {industry}/{subfocus}")
         logging.info(f"✅ Task marked as completed for {industry}/{subfocus}")
-        tasks_list.loc[mask, "status"] = 1
+        remaining_tasks = total_tasks - current_task_number
+        print(f"✅ Task {current_task_number}/{total_tasks} completed. {remaining_tasks} tasks remaining.")
+        logging.info(f"✅ Task {current_task_number}/{total_tasks} completed")
+        
         first_iteration = False
         
         # Track last industry to detect change
@@ -180,29 +176,19 @@ while True:
         
     except Exception as e:
         logging.error(f"Error processing task for {industry}/{subfocus} from {task_start_date} to {task_end_date}: {e}", exc_info=True)
-         # Add more detailed error info
+        # Add more detailed error info
         print(f"❌ ERROR: {e}")
         print(f"❌ Error type: {type(e).__name__}")
-        #logging.error(e)
+        
+        remaining_tasks = total_tasks - current_task_number
+        print(f"❌ Task {current_task_number}/{total_tasks} FAILED. {remaining_tasks} tasks remaining.")
+        
+        
         # Update task status to failed
-        # Update task status to failed - FIXED MATCHING LOGIC
-        if subfocus is None:
-            mask = (
-                (tasks_list["industry"] == industry) &
-                (pd.isna(tasks_list["subfocus"])) &
-                (tasks_list["start_date"] == task_start_date) &
-                (tasks_list["end_date"] == task_end_date)
-            )
-        else:
-            mask = (
-                (tasks_list["industry"] == industry) &
-                (tasks_list["subfocus"] == subfocus) &
-                (tasks_list["start_date"] == task_start_date) &
-                (tasks_list["end_date"] == task_end_date)
-            )
+        update_task_status(tasks_list, industry, subfocus, task_start_date, task_end_date, -1)
         
-        tasks_list.loc[mask, "status"] = -1
-        
+    current_task_number += 1
+       
     # Save updated task file after each task
     tasks_list.to_csv(TASK_FILE_PATH, index=False)
     print("📁 Task file updated.")

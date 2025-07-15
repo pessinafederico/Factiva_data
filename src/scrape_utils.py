@@ -125,7 +125,6 @@ def change_language(driver):
     Args:
         driver (webdriver): Selenium WebDriver instance.
     '''
-    logging.info("Setting language to English")
     time.sleep(4)
     driver.find_element(By.ID, "laTab").click()
     time.sleep(4)
@@ -136,7 +135,6 @@ def change_language(driver):
 # Define function to change region
 def change_region(driver):
     #### Change region ####
-    logging.info("Setting region to United Kingdom")
     time.sleep(4)
     driver.find_element(By.XPATH, "//a[text()='Region' and contains(@class, 'fesTabLinkFix')]").click()
     time.sleep(4)
@@ -176,7 +174,6 @@ def add_subject(subject_name):
  
 # Define function to change subject
 def change_subject(driver):
-    logging.info("Adding subjects...")
     subjects_to_add = [
     "Commodity/Financial Market News",
     "Corporate/Industrial News",
@@ -198,7 +195,6 @@ def change_subject(driver):
 
 # Define function other minor settings
 def other_settings(driver):
-    logging.info("Setting other search parameters")
     time.sleep(2)
     # Add key search terms in search box at the top
     driver.execute_script("""
@@ -219,7 +215,6 @@ def other_settings(driver):
     
 # Define function other minor settings - except text
 def other_settings_notext(driver):
-    logging.info("Setting other search parameters")
     time.sleep(2)
     
     # Remove some of the "more options"
@@ -278,7 +273,6 @@ def change_industry_remove_old(driver, industry,last_industry):
     wait_and_get_element(driver, By.XPATH, f"//a[text()='{industry}' and contains(@class, 'mnuItm')]").click()
     time.sleep(4)
     
-    logging.info(f"Removing old industry {last_industry}")
     old_label = wait_and_get_element(driver, By.XPATH, f"//span[text()='{last_industry}' and contains(@class, 'filterText')]")
     old_label.click()
     time.sleep(1)
@@ -297,7 +291,6 @@ def click_search_button(driver):
     Args:
         driver (webdriver): Selenium WebDriver instance.
     '''
-    logging.info("Clicking search button")
     # Click the search button at the bottom
     time.sleep(4)
     driver.find_element(By.XPATH, '//*[@id="btnSearchBottom"]').click()
@@ -306,7 +299,6 @@ def click_search_button(driver):
 
 # Function to get results and export
 def get_results_and_export(driver,industry,subfocus,base_folder,start_date, end_date):
-    logging.info("Extracting and saving results")
     # Extract rows from the summary table
     summary_data = driver.find_elements(By.XPATH, "//tbody/tr[td[@class='label']]")
 
@@ -382,7 +374,6 @@ def click_modify_search_button(driver):
     Args:
         driver (webdriver): Selenium WebDriver instance.
     '''
-    logging.info("Clicking modify search button")
     time.sleep(4)
     driver.find_element(By.XPATH, '//*[@id="btnModifySearch"]').click()
     time.sleep(4)
@@ -416,7 +407,6 @@ def safe_close_overlay(driver):
             EC.element_to_be_clickable((By.XPATH, primary_xpath))
         )
         close_btn.click()
-        logging.info("Overlay closed with primary xpath")
         return
     except:
         logging.warning("Primary close button xpath failed, trying fallback divs")
@@ -496,7 +486,6 @@ def get_sources_industry_subjects_folders(base_folder,subfocus,start_date,end_da
     
     # Only download industries if no subfocus is specified
     if not subfocus:
-        logging.info("No subfocus specified - downloading industry chart")
         export_csv(driver, EXPORT_XPATHS["Industry"], "Industry", industries_folder, "industries", start_date, end_date)
     else:
         logging.info(f"Subfocus '{subfocus}' specified - skipping industry chart download")
@@ -876,7 +865,9 @@ def run_scraper_tasks(industry,
         results_count = get_results_and_export(driver, industry, subfocus,DATA_SAVE_FOLDER, start_date, end_date)
         
         # Only download charts if there are results
-        if results_count > 0:
+        # Set minimum threshold for chart downloads
+        MIN_RESULTS_FOR_CHARTS = 3 # change also below
+        if results_count >= MIN_RESULTS_FOR_CHARTS:
             #logging.info(f"Found {results_count} results - downloading charts")
             # Get sources, industries, and subjects folders
             get_sources_industry_subjects_folders(DATA_SAVE_FOLDER, subfocus, start_date, end_date, driver, industry)
@@ -926,7 +917,9 @@ def run_scraper_tasks(industry,
         results_count = get_results_and_export(driver, industry,subfocus, DATA_SAVE_FOLDER, start_date, end_date)
         
         # Only download charts if there are results
-        if results_count > 0:
+        # Set minimum threshold for chart downloads
+        MIN_RESULTS_FOR_CHARTS = 3
+        if results_count >= MIN_RESULTS_FOR_CHARTS:
             #logging.info(f"Found {results_count} results - downloading charts")
             # Get sources, industries, and subjects folders
             get_sources_industry_subjects_folders(DATA_SAVE_FOLDER, subfocus, start_date, end_date, driver, industry)

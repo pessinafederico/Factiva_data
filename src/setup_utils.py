@@ -164,3 +164,42 @@ def initialize_and_select_tasks(
                 os.makedirs(chart_folder, exist_ok=True)
 
     return tasks_pending_list, tasks_list
+
+def update_task_status(tasks_list, industry, subfocus, start_date, end_date, status):
+    """
+    Helper function to properly update task status handling NaN/None subfocus
+    """
+    import logging
+    import pandas as pd
+    try:
+        if subfocus is None:
+            # Match against NaN/null values in the CSV
+            mask = (
+                (tasks_list["industry"] == industry) &
+                (pd.isna(tasks_list["subfocus"])) &
+                (tasks_list["start_date"] == start_date) &
+                (tasks_list["end_date"] == end_date)
+            )
+        else:
+            # Match against actual subfocus values
+            mask = (
+                (tasks_list["industry"] == industry) &
+                (tasks_list["subfocus"] == subfocus) &
+                (tasks_list["start_date"] == start_date) &
+                (tasks_list["end_date"] == end_date)
+            )
+        
+        matching_rows = len(tasks_list[mask])
+        if matching_rows == 0:
+            logging.warning(f"No matching task found for {industry}/{subfocus} {start_date}-{end_date}")
+            return False
+        elif matching_rows > 1:
+            logging.warning(f"Multiple matching tasks found for {industry}/{subfocus} {start_date}-{end_date}")
+        
+        tasks_list.loc[mask, "status"] = status
+        logging.info(f"Task status updated to {status} for {industry}/{subfocus} {start_date}-{end_date}")
+        return True
+        
+    except Exception as e:
+        logging.error(f"Error updating task status: {e}")
+        return False

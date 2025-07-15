@@ -1,0 +1,22 @@
+2025-07-15 21:22:52 [INFO] Running task for industry: All and subfocus: None, from 2014-01-01 to 2014-01-31
+2025-07-15 21:22:52 [INFO] Task 1/1242: All/None 2014-01-01-2014-01-31
+2025-07-15 21:22:52 [INFO] Running task for industry: All and subfocus: None, from 2014-01-01 to 2014-01-31
+2025-07-15 21:22:52 [INFO] Starting scraper task for All from 2014-01-01 to 2014-01-31
+2025-07-15 21:22:52 [INFO] Launching Chrome browser with remote debugging...
+2025-07-15 21:22:52 [INFO] Chrome launched. Log in manually, then press Enter to continue...
+2025-07-15 21:23:11 [INFO] Setting up ChromeDriver service...
+2025-07-15 21:23:11 [INFO] Connected to ChromeDriver via remote debugging.
+2025-07-15 21:23:14 [INFO] First iteration: performing full setup
+2025-07-15 21:23:14 [INFO] Setting date range: 2014-01-01 to 2014-01-31
+2025-07-15 21:23:15 [INFO] Date range fields updated
+2025-07-15 21:23:15 [INFO] Set search text to: rst=topuk
+2025-07-15 21:23:16 [INFO] Added to search text:  AND la=en
+2025-07-15 21:23:17 [INFO] Added to search text:  AND re=UK
+2025-07-15 21:23:18 [INFO] Using broad subject categories
+2025-07-15 21:23:18 [INFO] Added to search text:  AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-15 21:23:19 [INFO] Current search text: rst=topuk  AND la=en  AND re=UK  AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-15 21:23:19 [INFO] Set search text to: rst=topuk  AND la=en  AND re=UK  AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-15 21:23:20 [INFO] Set industry filter for: All ()
+2025-07-15 21:23:20 [INFO] Setting other search parameters
+2025-07-15 21:23:30 [INFO] Other search parameters set
+2025-07-15 21:23:30 [INFO] Clicking search button

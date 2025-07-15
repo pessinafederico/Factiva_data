@@ -1,6 +1,0 @@
-2025-07-15 18:18:47 [INFO] Starting scraper tasks for 7452 pending tasks.
-2025-07-15 18:18:47 [INFO] Running task for industry: All and subfocus: None, from 2014-01-01 to 2014-01-31
-2025-07-15 18:18:47 [INFO] Running task for industry: All and subfocus: None, from 2014-01-01 to 2014-01-31
-2025-07-15 18:18:47 [INFO] Starting scraper task for All from 2014-01-01 to 2014-01-31
-2025-07-15 18:18:47 [INFO] Launching Chrome browser with remote debugging...
-2025-07-15 18:18:47 [INFO] Chrome launched. Log in manually, then press Enter to continue...
