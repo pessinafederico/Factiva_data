@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import Select
 import os
 import csv
 import logging
+import shutil
 
 driver = None
 
@@ -74,13 +75,26 @@ def change_date_range(driver, start_date, end_date):
     start_year, start_month, start_day = start_date.split('-')
     end_year, end_month, end_day = end_date.split('-')
     
-    time.sleep(4)
+    wait = WebDriverWait(driver, 1)
 
-    # Select "Custom" date range
-    select = Select(driver.find_element(By.ID, "dr"))
-    select.select_by_visible_text("Enter date range...")
-    logging.info("Selected 'Enter date range...' option")
-    time.sleep(1.5)
+    # ---- Step 1: Click the Date Dropdown ----
+    # Click the "Date" dropdown itself
+    date_dropdown = wait.until(EC.element_to_be_clickable((By.ID, "dr")))
+    date_dropdown.click()
+
+    try:
+        enter_range_option = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[text()[contains(., 'Enter date range')]]"))
+        )
+        enter_range_option.click()
+    except:
+        print("Retrying dropdown click and selection")
+        date_dropdown.click()
+        time.sleep(1)
+        enter_range_option = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[text()[contains(., 'Enter date range')]]"))
+        )
+        enter_range_option.click()
 
     # Fill in "From" date fields
     driver.find_element(By.ID, 'frd').clear()
@@ -189,8 +203,24 @@ def other_settings(driver):
     # Add key search terms in search box at the top
     driver.execute_script("""
         let editor = ace.edit(document.getElementsByClassName('ace_editor')[0]);
-        editor.setValue('rst=tukn');
+        editor.setValue('rst=topuk');
     """)
+    
+    # Remove some of the "more options"
+    driver.find_element(By.XPATH, "//a[contains(text(), 'More Options')]").click()
+    time.sleep(4)
+
+    # Check the box if not already checked
+    checkbox = driver.find_element(By.ID, "isteo_bool")
+    if not checkbox.is_selected():
+        checkbox.click()
+        time.sleep(4)
+    logging.info("Other search parameters set")
+    
+# Define function other minor settings - except text
+def other_settings_notext(driver):
+    logging.info("Setting other search parameters")
+    time.sleep(2)
     
     # Remove some of the "more options"
     driver.find_element(By.XPATH, "//a[contains(text(), 'More Options')]").click()
@@ -275,7 +305,7 @@ def click_search_button(driver):
     logging.info("Search button clicked")
 
 # Function to get results and export
-def get_results_and_export(driver,industry,base_folder,start_date, end_date):
+def get_results_and_export(driver,industry,subfocus,base_folder,start_date, end_date):
     logging.info("Extracting and saving results")
     # Extract rows from the summary table
     summary_data = driver.find_elements(By.XPATH, "//tbody/tr[td[@class='label']]")
@@ -294,14 +324,40 @@ def get_results_and_export(driver,industry,base_folder,start_date, end_date):
         summary_dict["Deduplication Summary"] = dedup_value
     except:
         summary_dict["Deduplication Summary"] = ""
+        
+    # Check if there are any results
+    results_found = summary_dict.get("Results Found", "0")
+    try:
+        # Remove commas and convert to int
+        results_count = int(results_found.replace(",", ""))
+    except:
+        results_count = 0
+    
+    logging.info(f"Results found: {results_count}")
+    
+    # if results_count == 0:
+    #     logging.info("No results found - skipping file save and chart downloads")
+    #     return 0  # Return 0 to indicate no results
     
     # Ensure industry-specific folder exists
     industry_folder = os.path.join(base_folder, industry.replace("/", "_"))
     os.makedirs(industry_folder, exist_ok=True)
-
+    
+    if subfocus:
+        # Create subfocus folder
+        subfocus_folder = os.path.join(industry_folder, subfocus.replace("/", "_"))
+        os.makedirs(subfocus_folder, exist_ok=True)
+        target_folder = subfocus_folder
+    else:
+        # No subfocus - create "no_subfocus" folder
+        no_subfocus_folder = os.path.join(industry_folder, "no_subfocus")
+        target_folder = no_subfocus_folder
+        
+    os.makedirs(target_folder, exist_ok=True)
+    
     # Construct filename and path
     filename = f"{start_date}_to_{end_date}.csv"
-    csv_path = os.path.join(industry_folder, filename)
+    csv_path = os.path.join(target_folder, filename)
 
     # Write CSV
     with open(csv_path, "w", newline='', encoding="utf-8") as f:
@@ -311,6 +367,12 @@ def get_results_and_export(driver,industry,base_folder,start_date, end_date):
     
     time.sleep(4)
     logging.info(f"Results saved to {csv_path}")
+    if results_count == 0:
+        logging.info("No results found - CSV saved but skipping chart downloads")
+    else:
+        logging.info(f"Found {results_count} results - CSV saved, proceeding with charts")
+        
+    return results_count 
 
 # Function to click modify search button
 def click_modify_search_button(driver):
@@ -325,9 +387,329 @@ def click_modify_search_button(driver):
     driver.find_element(By.XPATH, '//*[@id="btnModifySearch"]').click()
     time.sleep(4)
     logging.info("Modify search button clicked")
+    
+def safe_click(driver, xpath, retries=2, wait_time=5):
+    for attempt in range(retries):
+        try:
+            btn = WebDriverWait(driver, wait_time).until(
+                EC.element_to_be_clickable((By.XPATH, xpath))
+            )
+            btn.click()
+            return
+        except Exception as e:
+            if attempt == retries - 1:
+                raise
+            time.sleep(2)
+            
+# def safe_close_overlay(driver):
+#     try:
+#         WebDriverWait(driver, 3).until(
+#             EC.element_to_be_clickable((By.XPATH, "/html/body/div[14]/div/div[1]/div[2]"))
+#         ).click()
+#     except Exception as e:
+#         print("[WARN] Failed to close overlay. Continuing anyway.")
         
+def safe_close_overlay(driver):
+    primary_xpath = "//*[@id='relInfoPopupBalloon']/div[1]/div[2]"
+    try:
+        close_btn = WebDriverWait(driver, 3).until(
+            EC.element_to_be_clickable((By.XPATH, primary_xpath))
+        )
+        close_btn.click()
+        logging.info("Overlay closed with primary xpath")
+        return
+    except:
+        logging.warning("Primary close button xpath failed, trying fallback divs")
+
+    for i in range(13, 20):
+        try:
+            xpath = f"/html/body/div[{i}]/div/div[1]/div[2]"
+            close_btn = WebDriverWait(driver, 2).until(
+                EC.element_to_be_clickable((By.XPATH, xpath))
+            )
+            close_btn.click()
+            logging.info(f"Overlay closed with fallback div[{i}]")
+            return
+        except:
+            continue
+
+    logging.warning("[WARN] Could not close overlay window after multiple strategies.")
+
+def wait_for_file(path, timeout=10):
+    for _ in range(timeout * 2):  # check every 0.5s
+        if os.path.exists(path):
+            return
+        time.sleep(0.5)
+    raise FileNotFoundError(f"Timed out waiting for {path}")
+        
+def export_csv(driver, export_xpath, download_name, dest_folder, prefix, start_date, end_date):    
+    
+    driver.switch_to.default_content()
+    safe_click(driver, export_xpath)
+    
+    WebDriverWait(driver, 5).until(
+        EC.frame_to_be_available_and_switch_to_it((By.NAME, "exportChartFrame"))
+    )
+    WebDriverWait(driver, 5).until(
+        EC.element_to_be_clickable((By.XPATH, "//span[text()='Download .CSV']"))
+    ).click()
+    
+    driver.switch_to.default_content()
+    safe_close_overlay(driver)
+    
+    downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+    full_path = os.path.join(downloads_folder, f"{download_name}.csv")
+    wait_for_file(full_path)
+
+    # Format new filename and move
+    start = start_date.replace('-', '')
+    end = end_date.replace('-', '')
+    new_name = f"{prefix}_{start}_{end}.csv"
+
+    os.makedirs(dest_folder, exist_ok=True)
+    shutil.move(full_path, os.path.join(dest_folder, new_name))
+
+def get_sources_industry_subjects_folders(base_folder,subfocus,start_date,end_date,driver,industry):
+    industry_folder = os.path.join(base_folder, industry.replace("/", "_"))
+    
+    if subfocus:
+        # Create subfocus folder structure
+        subfocus_folder = os.path.join(industry_folder, subfocus.replace("/", "_"))
+        sources_folder = os.path.join(subfocus_folder, "sources")
+        subjects_folder = os.path.join(subfocus_folder, "subjects")
+        industries_folder = os.path.join(subfocus_folder, "industries")
+    else:
+        # No subfocus - use industry folder directly
+        no_subfocus_folder = os.path.join(industry_folder, "no_subfocus")
+        sources_folder = os.path.join(no_subfocus_folder, "sources")
+        subjects_folder = os.path.join(no_subfocus_folder, "subjects")
+        industries_folder = os.path.join(no_subfocus_folder, "industries")
+
+    EXPORT_XPATHS = {
+        "Source": "/html/body/form[2]/div[2]/div[2]/div[5]/div[2]/div[1]/div/div[3]/div/div[1]/span/a/span",
+        "Subject": "/html/body/form[2]/div[2]/div[2]/div[5]/div[2]/div[1]/div/div[4]/div/div[1]/span/a/span",
+        "Industry": "/html/body/form[2]/div[2]/div[2]/div[5]/div[2]/div[1]/div/div[5]/div/div[1]/span/a/span",
+    }
+
+    export_csv(driver, EXPORT_XPATHS["Source"], "Source", sources_folder, "sources", start_date, end_date)
+    export_csv(driver, EXPORT_XPATHS["Subject"], "Subject", subjects_folder, "subjects", start_date, end_date)
+    
+    # Only download industries if no subfocus is specified
+    if not subfocus:
+        logging.info("No subfocus specified - downloading industry chart")
+        export_csv(driver, EXPORT_XPATHS["Industry"], "Industry", industries_folder, "industries", start_date, end_date)
+    else:
+        logging.info(f"Subfocus '{subfocus}' specified - skipping industry chart download")
+
+def set_search_text(driver, text):
+    """
+    Set text in the Factiva free text search box (ACE editor).
+    
+    Args:
+        driver: Selenium WebDriver instance
+        text (str): Text to set in the search box
+    """
+    try:
+        driver.execute_script(f"""
+            let editor = ace.edit(document.getElementsByClassName('ace_editor')[0]);
+            editor.setValue('{text}');
+        """)
+        logging.info(f"Set search text to: {text}")
+        time.sleep(1)
+        return True
+    except Exception as e:
+        logging.error(f"Failed to set search text: {e}")
+        return False
+
+def add_search_text(driver, additional_text):
+    """
+    Add text to existing content in the Factiva free text search box.
+    
+    Args:
+        driver: Selenium WebDriver instance
+        additional_text (str): Text to add to existing search
+    """
+    try:
+        driver.execute_script(f"""
+            let editor = ace.edit(document.getElementsByClassName('ace_editor')[0]);
+            let currentText = editor.getValue();
+            let newText = currentText + ' {additional_text}';
+            editor.setValue(newText);
+        """)
+        logging.info(f"Added to search text: {additional_text}")
+        time.sleep(1)
+        return True
+    except Exception as e:
+        logging.error(f"Failed to add search text: {e}")
+        return False
+
+def get_search_text(driver):
+    """
+    Get current text from the Factiva free text search box.
+    
+    Args:
+        driver: Selenium WebDriver instance
+    
+    Returns:
+        str: Current search text
+    """
+    try:
+        current_text = driver.execute_script("""
+            let editor = ace.edit(document.getElementsByClassName('ace_editor')[0]);
+            return editor.getValue();
+        """)
+        logging.info(f"Current search text: {current_text}")
+        return current_text
+    except Exception as e:
+        logging.error(f"Failed to get search text: {e}")
+        return ""
+
+def clear_search_text(driver):
+    """
+    Clear all text from the Factiva free text search box.
+    
+    Args:
+        driver: Selenium WebDriver instance
+    """
+    try:
+        driver.execute_script("""
+            let editor = ace.edit(document.getElementsByClassName('ace_editor')[0]);
+            editor.setValue('');
+        """)
+        logging.info("Cleared search text")
+        time.sleep(1)
+        return True
+    except Exception as e:
+        logging.error(f"Failed to clear search text: {e}")
+        return False
+
+def replace_search_text(driver, old_text, new_text):
+    """
+    Replace specific text in the search box.
+    
+    Args:
+        driver: Selenium WebDriver instance
+        old_text (str): Text to replace
+        new_text (str): Replacement text
+    """
+    try:
+        driver.execute_script(f"""
+            let editor = ace.edit(document.getElementsByClassName('ace_editor')[0]);
+            let currentText = editor.getValue();
+            let newText = currentText.replace('{old_text}', '{new_text}');
+            editor.setValue(newText);
+        """)
+        logging.info(f"Replaced '{old_text}' with '{new_text}'")
+        time.sleep(1)
+        return True
+    except Exception as e:
+        logging.error(f"Failed to replace search text: {e}")
+        return False
+
+
+def set_industry_search_text(driver, industry):
+    
+    import re
+    # Define industries code mapping
+    industries_search_codes = {
+        "All":"",
+        "Agriculture":"i0",
+        "Automotive":"iaut",
+        "Basic Materials/Resources":"ibasicm",
+        "Business/Consumer Services":"ibcs",
+        "Consumer Goods":"incp",
+        "Energy":"i1",
+        "Financial Services":"ifinal",
+        "Healthcare/Life Sciences":"i951",
+        "Industrial Goods":"iindstrls",
+        "Leisure/Arts/Hospitality":"ilea",
+        "Media/Entertainment":"imed",
+        "Real Estate/Construction":"icre",
+        "Retail/Wholesale":"i64",
+        "Technology":"itech",
+        "Telecommunication Services":"i7902",
+        "Transportation/Logistics":"itsp",
+        "Utilities":"iutil"
+    }
+    
+    # Get current search text
+    current_search = get_search_text(driver)
+    
+    # Remove any existing industry codes (in=i### pattern)
+    import re
+    cleaned_search = re.sub(r'\s*AND\s*in=i\w+', '', current_search)
+    cleaned_search = re.sub(r'in=i\w+\s*AND\s*', '', cleaned_search)
+    cleaned_search = re.sub(r'in=i\w+', '', cleaned_search)
+    cleaned_search = cleaned_search.strip()
+    
+    # Add new industry code if not "All"
+    if industry != "All" and industry in industries_search_codes:
+        industry_code = industries_search_codes[industry]
+        if industry_code:
+            new_search = f"{cleaned_search} AND in={industry_code}"
+        else:
+            new_search = cleaned_search
+    else:
+        new_search = cleaned_search
+        
+     # Set the new search text
+    set_search_text(driver, new_search.strip())
+    logging.info(f"Set industry filter for: {industry} ({industries_search_codes.get(industry, 'No code')})")
+    return True
+
+def set_subfocus_search(driver, subfocus):
+    """
+    Set subfocus filter by replacing existing ns conditions.
+    
+    Args:
+        driver: Selenium WebDriver instance
+        subfocus (str): Subfocus name from subfocuses_codes mapping
+    """
+    import re
+    
+    # Define subfocus code mapping
+    subfocuses_codes = {
+        "Tariffs": "gtrade",  # Trade barriers/restrictions, under economic news (ecat)
+        "Supply Chain": "cscm"  # Under corporate/industrial news (ccat)
+    }
+    
+    # Get current search text
+    current_search = get_search_text(driver)
+    
+    # Remove any existing ns conditions
+    # Remove patterns like: AND (ns=xxx OR ns=yyy OR ns=zzz)
+    cleaned_search = re.sub(r'\s*AND\s*\([^)]*ns=[^)]*\)', '', current_search)
+    # Remove patterns like: AND ns=xxx
+    cleaned_search = re.sub(r'\s*AND\s*ns=\w+', '', cleaned_search)
+    # Remove any leftover parentheses patterns
+    cleaned_search = re.sub(r'\s*AND\s*\([^)]*\)', '', cleaned_search)
+    # Clean up any multiple spaces
+    cleaned_search = re.sub(r'\s+', ' ', cleaned_search)
+    cleaned_search = cleaned_search.strip()
+    
+    # Add new subfocus code if specified
+    if subfocus and subfocus in subfocuses_codes:
+        subfocus_code = subfocuses_codes[subfocus]
+        new_search = f"{cleaned_search} AND ns={subfocus_code}"
+        logging.info(f"Set subfocus filter for: {subfocus} (ns={subfocus_code})")
+    else:
+        new_search = cleaned_search
+        logging.info("Removed subfocus filter")
+    
+    # Set the new search text
+    set_search_text(driver, new_search.strip())
+    return True
+
+def remove_subfocus_search(driver):
+    """
+    Remove any existing subfocus (ns) conditions from search.
+    """
+    return set_subfocus_search(driver, None)
+
+
 # Main function with all tasks
-def run_scraper_tasks(industry, 
+def run_scraper_tasks_with_clicking(industry,
+                                    subfocus, 
                       start_date, 
                       end_date, 
                       last_industry,
@@ -343,53 +725,217 @@ def run_scraper_tasks(industry,
     driver = init_driver()
     
     if first_iteration:
-        logging.info("First iteration: performing full setup")
-        # Change the date range
-        change_date_range(driver,start_date,end_date)
         
-        # Change language
-        change_language(driver)
+        if industry == "All":
+            
+            logging.info("First iteration: performing full setup - no industry specified")
+            
+            # Change the date range
+            change_date_range(driver,start_date,end_date)
+            
+            # Change language
+            change_language(driver)
+            
+            # Change region
+            change_region(driver)
+            
+            # Change subject
+            change_subject(driver)
+            
+            # Other settings
+            other_settings(driver)
+            
+            # Click search button
+            click_search_button(driver)
+            
+            # Save results and export
+            get_results_and_export(driver, industry, subfocus,DATA_SAVE_FOLDER, start_date, end_date)
+            
+            # Get sources, industries, and subjects folders
+            get_sources_industry_subjects_folders(DATA_SAVE_FOLDER,start_date,end_date,driver,industry)
+            
+            # Click modify search button
+            click_modify_search_button(driver)
         
-        # Change region
-        change_region(driver)
+        else:
+            logging.info("First iteration: performing full setup")
+            # Change the date range
+            change_date_range(driver,start_date,end_date)
+            
+            # Change language
+            change_language(driver)
+            
+            # Change region
+            change_region(driver)
+            
+            # Change subject
+            change_subject(driver)
+            
+            # Other settings
+            other_settings(driver)
+            
+            # Change industry
+            change_industry(driver, industry)
+            
+            # Click search button
+            click_search_button(driver)
+            
+            # Save results and export
+            get_results_and_export(driver, industry, subfocus, DATA_SAVE_FOLDER, start_date, end_date)
+            
+            # Get sources, industries, and subjects folders
+            get_sources_industry_subjects_folders(DATA_SAVE_FOLDER,start_date,end_date,driver,industry)
+            
+            # Click modify search button
+            click_modify_search_button(driver)
         
-        # Change subject
-        change_subject(driver)
-        
-        # Other settings
-        other_settings(driver)
-        
-        # Change industry
-        change_industry(driver, industry)
-        
-        # Click search button
-        click_search_button(driver)
-        
-        # Save results and export
-        get_results_and_export(driver, industry, DATA_SAVE_FOLDER, start_date, end_date)
-        
-        # Click modify search button
-        click_modify_search_button(driver)
         logging.info("First iteration setup complete")
         
     else:
-        logging.info("Subsequent iteration: updating parameters")
+        logging.info("Next iteration: updating parameters")
         # If not the first iteration, just change the date
         change_date_range(driver, start_date, end_date)
         
         # Change industry if it has changed
-        if industry != last_industry:
+        if industry != last_industry and last_industry != "All":
             logging.info(f"Changing industry from {last_industry} to {industry}")
             change_industry_remove_old(driver, industry,last_industry)
+        
+        if last_industry == "All":
+            logging.info("Last industry was 'All', skipping language, region, and subject changes")
+            # Change industry
+            change_industry(driver, industry)
+            
+        # Click search button
+        click_search_button(driver)
+        
+        # Save results and export
+        get_results_and_export(driver, industry, subfocus,DATA_SAVE_FOLDER, start_date, end_date)
+        
+        # Get sources, industries, and subjects folders
+        get_sources_industry_subjects_folders(DATA_SAVE_FOLDER,start_date,end_date,driver,industry)
+        
+        # Click modify search button
+        click_modify_search_button(driver)
+        logging.info("Next iteration update complete")
+    
+    logging.info(f"Completed task for {industry} from {start_date} to {end_date}")
+    
+# Main function with all tasks - using the search text
+def run_scraper_tasks(industry, 
+                      subfocus,
+                      start_date, 
+                      end_date, 
+                      last_industry,
+                      last_subfocus,
+                      first_iteration,
+                      DATA_SAVE_FOLDER):
+    '''
+    Main function
+    Run the scraper tasks for each industry and date range.
+    '''
+    logging.info(f"Starting scraper task for {industry} from {start_date} to {end_date}")
+    
+    # Initialize the WebDriver
+    driver = init_driver()
+    
+    if first_iteration:
+        
+        logging.info("First iteration: performing full setup")
+        
+        # Change the date range
+        change_date_range(driver,start_date,end_date)
+        
+        # Set text for only top uk newspapers sources
+        set_search_text(driver, "rst=topuk")
+        
+        # Change language to english only
+        add_search_text(driver, " AND la=en")
+        
+        # Change region to United Kingdom
+        add_search_text(driver, " AND re=UK")
+        
+        # Change subjects to broad categories OR set subfocus if specified
+        if subfocus and subfocus.strip():  # Check if subfocus exists and is not empty
+            logging.info(f"Using subfocus: {subfocus}")
+            set_subfocus_search(driver, subfocus)
+        else:
+            logging.info("Using broad subject categories")
+            add_search_text(driver, " AND (ns=ccat OR ns=ecat OR ns=mcat)")
+        
+        # Add industry search text
+        set_industry_search_text(driver, industry)
+        
+        # Other settings
+        other_settings_notext(driver)
         
         # Click search button
         click_search_button(driver)
         
         # Save results and export
-        get_results_and_export(driver, industry, DATA_SAVE_FOLDER, start_date, end_date)
+        results_count = get_results_and_export(driver, industry, subfocus,DATA_SAVE_FOLDER, start_date, end_date)
+        
+        # Only download charts if there are results
+        if results_count > 0:
+            #logging.info(f"Found {results_count} results - downloading charts")
+            # Get sources, industries, and subjects folders
+            get_sources_industry_subjects_folders(DATA_SAVE_FOLDER, subfocus, start_date, end_date, driver, industry)
+        # else:
+        #     logging.info("No results found - skipping chart downloads")
         
         # Click modify search button
         click_modify_search_button(driver)
-        logging.info("Subsequent iteration update complete")
+        
+        logging.info("First iteration setup complete")
+        
+    else:
+        logging.info("Next iteration: updating parameters")
+        
+        # If not the first iteration, just change the date
+        change_date_range(driver, start_date, end_date)
+        
+        # Change industry if needed
+        # Only change industry if it has changed
+        if industry != last_industry:
+            logging.info(f"Industry changed from {last_industry} to {industry}")
+            set_industry_search_text(driver, industry)
+        else:
+            logging.info(f"Industry unchanged: {industry}")
+            
+         # Change subfocus if needed
+        if subfocus != last_subfocus:
+            logging.info(f"Subfocus changed from {last_subfocus} to {subfocus}")
+            if subfocus and subfocus.strip():
+                set_subfocus_search(driver, subfocus)
+            else:
+                # If subfocus is None/empty, revert to broad categories
+                logging.info("Reverting to broad subject categories")
+                # Remove existing ns conditions and add broad categories
+                current_search = get_search_text(driver)
+                import re
+                cleaned_search = re.sub(r'\s*AND\s*\([^)]*ns=[^)]*\)', '', current_search)
+                cleaned_search = re.sub(r'\s*AND\s*ns=\w+', '', current_search)
+                set_search_text(driver, f"{cleaned_search.strip()} AND (ns=ccat OR ns=ecat OR ns=mcat)")
+        else:
+            logging.info(f"Subfocus unchanged: {subfocus}")
+                
+        # Click search button
+        click_search_button(driver)
+        
+        # Save results and export
+        results_count = get_results_and_export(driver, industry,subfocus, DATA_SAVE_FOLDER, start_date, end_date)
+        
+        # Only download charts if there are results
+        if results_count > 0:
+            #logging.info(f"Found {results_count} results - downloading charts")
+            # Get sources, industries, and subjects folders
+            get_sources_industry_subjects_folders(DATA_SAVE_FOLDER, subfocus, start_date, end_date, driver, industry)
+        # else:
+        #     logging.info("No results found - skipping chart downloads")
+        
+        # Click modify search button
+        click_modify_search_button(driver)
+        logging.info("Next iteration update complete")
     
     logging.info(f"Completed task for {industry} from {start_date} to {end_date}")
+        
