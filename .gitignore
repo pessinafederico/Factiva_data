@@ -4,5 +4,6 @@ __pycache__/
 data_raw/
 data_working/
 output/
+logs/
 .DS_Store
 .vscode/
