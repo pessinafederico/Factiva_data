@@ -434,30 +434,35 @@ def wait_for_file(path, timeout=10):
         
 def export_csv(driver, export_xpath, download_name, dest_folder, prefix, start_date, end_date):    
     
-    driver.switch_to.default_content()
-    safe_click(driver, export_xpath)
-    
-    WebDriverWait(driver, 5).until(
-        EC.frame_to_be_available_and_switch_to_it((By.NAME, "exportChartFrame"))
-    )
-    WebDriverWait(driver, 5).until(
-        EC.element_to_be_clickable((By.XPATH, "//span[text()='Download .CSV']"))
-    ).click()
-    
-    driver.switch_to.default_content()
-    safe_close_overlay(driver)
-    
-    downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
-    full_path = os.path.join(downloads_folder, f"{download_name}.csv")
-    wait_for_file(full_path)
+    try: 
+        driver.switch_to.default_content()
+        safe_click(driver, export_xpath)
+        
+        WebDriverWait(driver, 5).until(
+            EC.frame_to_be_available_and_switch_to_it((By.NAME, "exportChartFrame"))
+        )
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//span[text()='Download .CSV']"))
+        ).click()
+        
+        driver.switch_to.default_content()
+        safe_close_overlay(driver)
+        
+        downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+        full_path = os.path.join(downloads_folder, f"{download_name}.csv")
+        wait_for_file(full_path)
 
-    # Format new filename and move
-    start = start_date.replace('-', '')
-    end = end_date.replace('-', '')
-    new_name = f"{prefix}_{start}_{end}.csv"
+        # Format new filename and move
+        start = start_date.replace('-', '')
+        end = end_date.replace('-', '')
+        new_name = f"{prefix}_{start}_{end}.csv"
 
-    os.makedirs(dest_folder, exist_ok=True)
-    shutil.move(full_path, os.path.join(dest_folder, new_name))
+        os.makedirs(dest_folder, exist_ok=True)
+        shutil.move(full_path, os.path.join(dest_folder, new_name))
+        return True
+    except Exception as e:
+        logging.warning(f"Failed to export {download_name} CSV: {e}")
+        return False
 
 def get_sources_industry_subjects_folders(base_folder,subfocus,start_date,end_date,driver,industry):
     industry_folder = os.path.join(base_folder, industry.replace("/", "_"))
@@ -489,6 +494,36 @@ def get_sources_industry_subjects_folders(base_folder,subfocus,start_date,end_da
         export_csv(driver, EXPORT_XPATHS["Industry"], "Industry", industries_folder, "industries", start_date, end_date)
     else:
         logging.info(f"Subfocus '{subfocus}' specified - skipping industry chart download")
+        
+def clear_downloads_folder():
+    """
+    Clear all files from the downloads folder
+    """
+    try:
+        downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+        if os.path.exists(downloads_folder):
+            # Get list of files in downloads folder
+            files = os.listdir(downloads_folder)
+            csv_files = [f for f in files if f.endswith('.csv')]
+            
+            if csv_files:
+                logging.info(f"Clearing {len(csv_files)} CSV files from downloads folder...")
+                for file in csv_files:
+                    try:
+                        file_path = os.path.join(downloads_folder, file)
+                        os.remove(file_path)
+                        logging.info(f"Deleted: {file}")
+                    except Exception as e:
+                        logging.warning(f"Could not delete {file}: {e}")
+                        
+                logging.info("✅ Downloads folder cleared")
+            else:
+                logging.info("Downloads folder already clean (no CSV files)")
+        else:
+            logging.warning("Downloads folder not found")
+            
+    except Exception as e:
+        logging.error(f"Error clearing downloads folder: {e}")
 
 def set_search_text(driver, text):
     """
@@ -695,7 +730,71 @@ def remove_subfocus_search(driver):
     """
     return set_subfocus_search(driver, None)
 
-
+def reset_to_search_page(driver):
+    """
+    Reset browser to the main Factiva search page to recover from errors.
+    
+    Args:
+        driver: Selenium WebDriver instance
+    """
+    try:
+        logging.info("Resetting browser to main search page...")
+        
+        # Try to navigate back to the main search page
+        factiva_search_url = "https://global.factiva.com/factivalogin/login.asp?productname=global"
+        driver.get(factiva_search_url)
+        
+        # Wait for page to load
+        time.sleep(5)
+        
+        # Alternative: try to find and click the "New Search" or "Search" button if available
+        try:
+            new_search_btn = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Search') or contains(text(), 'New Search')]"))
+            )
+            new_search_btn.click()
+            time.sleep(3)
+        except:
+            # If no button found, we're probably already on search page
+            pass
+            
+        logging.info("Successfully reset to search page")
+        return True
+        
+    except Exception as e:
+        logging.error(f"Failed to reset to search page: {e}")
+        return False
+    
+def reset_to_search_page(driver):
+    """
+    Reset browser to the original search page
+    
+    Args:
+        driver: Selenium WebDriver instance
+    
+    Returns:
+        bool: True if reset successful, False otherwise
+    """
+    try:
+        factiva_url = "https://global-factiva-com.lse.idm.oclc.org/sb/default.aspx?lnep=hp"
+        
+        logging.info("Resetting to original search page...")
+        driver.get(factiva_url)
+        time.sleep(5)
+        
+        # Wait for page to load properly
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
+        
+        logging.info("✅ Successfully reset to search page")
+        return True
+        
+    except Exception as e:
+        logging.error(f"Failed to reset to search page: {e}")
+        return False
+    
+  
 # Main function with all tasks
 def run_scraper_tasks_with_clicking(industry,
                                     subfocus, 
@@ -873,7 +972,7 @@ def run_scraper_tasks(industry,
             get_sources_industry_subjects_folders(DATA_SAVE_FOLDER, subfocus, start_date, end_date, driver, industry)
         # else:
         #     logging.info("No results found - skipping chart downloads")
-        
+        clear_downloads_folder()
         # Click modify search button
         click_modify_search_button(driver)
         
@@ -927,6 +1026,7 @@ def run_scraper_tasks(industry,
         #     logging.info("No results found - skipping chart downloads")
         
         # Click modify search button
+        clear_downloads_folder()
         click_modify_search_button(driver)
         logging.info("Next iteration update complete")
     

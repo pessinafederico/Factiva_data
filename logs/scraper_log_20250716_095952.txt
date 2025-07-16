@@ -1,0 +1,205 @@
+2025-07-16 09:59:52 [INFO] Launching Chrome browser with remote debugging...
+2025-07-16 09:59:52 [INFO] Chrome launched. Log in manually, then press Enter to continue...
+2025-07-16 10:00:11 [INFO] Setting up ChromeDriver service...
+2025-07-16 10:00:11 [INFO] Connected to ChromeDriver via remote debugging.
+2025-07-16 10:00:14 [INFO] Running task for industry: All and subfocus: Supply Chain, from 2016-04-01 to 2016-04-30
+2025-07-16 10:00:14 [INFO] Task 1/1159: All/Supply Chain 2016-04-01-2016-04-30
+2025-07-16 10:00:14 [INFO] Starting scraper task for All from 2016-04-01 to 2016-04-30
+2025-07-16 10:00:14 [INFO] First iteration: performing full setup
+2025-07-16 10:00:14 [INFO] Setting date range: 2016-04-01 to 2016-04-30
+2025-07-16 10:00:14 [INFO] Date range fields updated
+2025-07-16 10:00:14 [INFO] Set search text to: rst=topuk
+2025-07-16 10:00:15 [INFO] Added to search text:  AND la=en
+2025-07-16 10:00:16 [INFO] Added to search text:  AND re=UK
+2025-07-16 10:00:17 [INFO] Using subfocus: Supply Chain
+2025-07-16 10:00:17 [INFO] Current search text: rst=topuk  AND la=en  AND re=UK
+2025-07-16 10:00:17 [INFO] Set subfocus filter for: Supply Chain (ns=cscm)
+2025-07-16 10:00:17 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:00:18 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:00:18 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:00:19 [INFO] Set industry filter for: All ()
+2025-07-16 10:00:30 [INFO] Other search parameters set
+2025-07-16 10:00:44 [INFO] Search button clicked
+2025-07-16 10:00:45 [INFO] Results found: 6
+2025-07-16 10:00:49 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/Supply Chain/2016-04-01_to_2016-04-30.csv
+2025-07-16 10:00:49 [INFO] Found 6 results - CSV saved, proceeding with charts
+2025-07-16 10:01:01 [WARNING] Failed to export Source CSV: Timed out waiting for /Users/federicopessina/Downloads/Source.csv
+2025-07-16 10:01:03 [INFO] Subfocus 'Supply Chain' specified - skipping industry chart download
+2025-07-16 10:01:03 [INFO] Downloads folder already clean (no CSV files)
+2025-07-16 10:01:11 [INFO] Modify search button clicked
+2025-07-16 10:01:11 [INFO] First iteration setup complete
+2025-07-16 10:01:11 [INFO] Completed task for All from 2016-04-01 to 2016-04-30
+2025-07-16 10:01:11 [INFO] Task status updated to 1 for All/Supply Chain 2016-04-01-2016-04-30
+2025-07-16 10:01:11 [INFO] ✅ Task marked as completed for All/Supply Chain
+2025-07-16 10:01:11 [INFO] ✅ Task 1/1159 completed
+2025-07-16 10:01:11 [INFO] Running task for industry: All and subfocus: None, from 2016-05-01 to 2016-05-31
+2025-07-16 10:01:11 [INFO] Task 2/1159: All/None 2016-05-01-2016-05-31
+2025-07-16 10:01:11 [INFO] Starting scraper task for All from 2016-05-01 to 2016-05-31
+2025-07-16 10:01:11 [INFO] Next iteration: updating parameters
+2025-07-16 10:01:11 [INFO] Setting date range: 2016-05-01 to 2016-05-31
+2025-07-16 10:01:12 [INFO] Date range fields updated
+2025-07-16 10:01:12 [INFO] Industry unchanged: All
+2025-07-16 10:01:12 [INFO] Subfocus changed from Supply Chain to None
+2025-07-16 10:01:12 [INFO] Reverting to broad subject categories
+2025-07-16 10:01:12 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:01:12 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-16 10:01:24 [INFO] Search button clicked
+2025-07-16 10:01:24 [INFO] Results found: 10062
+2025-07-16 10:01:28 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/no_subfocus/2016-05-01_to_2016-05-31.csv
+2025-07-16 10:01:28 [INFO] Found 10062 results - CSV saved, proceeding with charts
+2025-07-16 10:01:36 [INFO] Downloads folder already clean (no CSV files)
+2025-07-16 10:01:44 [INFO] Modify search button clicked
+2025-07-16 10:01:44 [INFO] Next iteration update complete
+2025-07-16 10:01:44 [INFO] Completed task for All from 2016-05-01 to 2016-05-31
+2025-07-16 10:01:44 [INFO] Task status updated to 1 for All/None 2016-05-01-2016-05-31
+2025-07-16 10:01:44 [INFO] ✅ Task marked as completed for All/None
+2025-07-16 10:01:44 [INFO] ✅ Task 2/1159 completed
+2025-07-16 10:01:44 [INFO] Running task for industry: All and subfocus: Tariffs, from 2016-05-01 to 2016-05-31
+2025-07-16 10:01:44 [INFO] Task 3/1159: All/Tariffs 2016-05-01-2016-05-31
+2025-07-16 10:01:44 [INFO] Starting scraper task for All from 2016-05-01 to 2016-05-31
+2025-07-16 10:01:44 [INFO] Next iteration: updating parameters
+2025-07-16 10:01:44 [INFO] Setting date range: 2016-05-01 to 2016-05-31
+2025-07-16 10:01:45 [INFO] Date range fields updated
+2025-07-16 10:01:45 [INFO] Industry unchanged: All
+2025-07-16 10:01:45 [INFO] Subfocus changed from None to Tariffs
+2025-07-16 10:01:45 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-16 10:01:45 [INFO] Set subfocus filter for: Tariffs (ns=gtrade)
+2025-07-16 10:01:45 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND ns=gtrade
+2025-07-16 10:01:57 [INFO] Search button clicked
+2025-07-16 10:01:57 [INFO] Results found: 108
+2025-07-16 10:02:01 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/Tariffs/2016-05-01_to_2016-05-31.csv
+2025-07-16 10:02:01 [INFO] Found 108 results - CSV saved, proceeding with charts
+2025-07-16 10:02:07 [INFO] Subfocus 'Tariffs' specified - skipping industry chart download
+2025-07-16 10:02:07 [INFO] Clearing 1 CSV files from downloads folder...
+2025-07-16 10:02:07 [INFO] Deleted: Industry.csv
+2025-07-16 10:02:07 [INFO] ✅ Downloads folder cleared
+2025-07-16 10:02:15 [INFO] Modify search button clicked
+2025-07-16 10:02:15 [INFO] Next iteration update complete
+2025-07-16 10:02:15 [INFO] Completed task for All from 2016-05-01 to 2016-05-31
+2025-07-16 10:02:15 [INFO] Task status updated to 1 for All/Tariffs 2016-05-01-2016-05-31
+2025-07-16 10:02:15 [INFO] ✅ Task marked as completed for All/Tariffs
+2025-07-16 10:02:15 [INFO] ✅ Task 3/1159 completed
+2025-07-16 10:02:15 [INFO] Running task for industry: All and subfocus: Supply Chain, from 2016-05-01 to 2016-05-31
+2025-07-16 10:02:15 [INFO] Task 4/1159: All/Supply Chain 2016-05-01-2016-05-31
+2025-07-16 10:02:15 [INFO] Starting scraper task for All from 2016-05-01 to 2016-05-31
+2025-07-16 10:02:15 [INFO] Next iteration: updating parameters
+2025-07-16 10:02:15 [INFO] Setting date range: 2016-05-01 to 2016-05-31
+2025-07-16 10:02:16 [INFO] Date range fields updated
+2025-07-16 10:02:16 [INFO] Industry unchanged: All
+2025-07-16 10:02:16 [INFO] Subfocus changed from Tariffs to Supply Chain
+2025-07-16 10:02:16 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND ns=gtrade
+2025-07-16 10:02:16 [INFO] Set subfocus filter for: Supply Chain (ns=cscm)
+2025-07-16 10:02:16 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:02:28 [INFO] Search button clicked
+2025-07-16 10:02:28 [INFO] Results found: 5
+2025-07-16 10:02:32 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/Supply Chain/2016-05-01_to_2016-05-31.csv
+2025-07-16 10:02:32 [INFO] Found 5 results - CSV saved, proceeding with charts
+2025-07-16 10:02:38 [INFO] Subfocus 'Supply Chain' specified - skipping industry chart download
+2025-07-16 10:02:38 [INFO] Downloads folder already clean (no CSV files)
+2025-07-16 10:02:46 [INFO] Modify search button clicked
+2025-07-16 10:02:46 [INFO] Next iteration update complete
+2025-07-16 10:02:46 [INFO] Completed task for All from 2016-05-01 to 2016-05-31
+2025-07-16 10:02:46 [INFO] Task status updated to 1 for All/Supply Chain 2016-05-01-2016-05-31
+2025-07-16 10:02:46 [INFO] ✅ Task marked as completed for All/Supply Chain
+2025-07-16 10:02:46 [INFO] ✅ Task 4/1159 completed
+2025-07-16 10:02:46 [INFO] Running task for industry: All and subfocus: None, from 2016-06-01 to 2016-06-30
+2025-07-16 10:02:46 [INFO] Task 5/1159: All/None 2016-06-01-2016-06-30
+2025-07-16 10:02:46 [INFO] Starting scraper task for All from 2016-06-01 to 2016-06-30
+2025-07-16 10:02:46 [INFO] Next iteration: updating parameters
+2025-07-16 10:02:46 [INFO] Setting date range: 2016-06-01 to 2016-06-30
+2025-07-16 10:02:47 [INFO] Date range fields updated
+2025-07-16 10:02:47 [INFO] Industry unchanged: All
+2025-07-16 10:02:47 [INFO] Subfocus changed from Supply Chain to None
+2025-07-16 10:02:47 [INFO] Reverting to broad subject categories
+2025-07-16 10:02:47 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:02:47 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-16 10:02:59 [INFO] Search button clicked
+2025-07-16 10:02:59 [INFO] Results found: 9614
+2025-07-16 10:03:03 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/no_subfocus/2016-06-01_to_2016-06-30.csv
+2025-07-16 10:03:03 [INFO] Found 9614 results - CSV saved, proceeding with charts
+2025-07-16 10:03:12 [INFO] Downloads folder already clean (no CSV files)
+2025-07-16 10:03:20 [INFO] Modify search button clicked
+2025-07-16 10:03:20 [INFO] Next iteration update complete
+2025-07-16 10:03:20 [INFO] Completed task for All from 2016-06-01 to 2016-06-30
+2025-07-16 10:03:20 [INFO] Task status updated to 1 for All/None 2016-06-01-2016-06-30
+2025-07-16 10:03:20 [INFO] ✅ Task marked as completed for All/None
+2025-07-16 10:03:20 [INFO] ✅ Task 5/1159 completed
+2025-07-16 10:03:20 [INFO] Running task for industry: All and subfocus: Tariffs, from 2016-06-01 to 2016-06-30
+2025-07-16 10:03:20 [INFO] Task 6/1159: All/Tariffs 2016-06-01-2016-06-30
+2025-07-16 10:03:20 [INFO] Starting scraper task for All from 2016-06-01 to 2016-06-30
+2025-07-16 10:03:20 [INFO] Next iteration: updating parameters
+2025-07-16 10:03:20 [INFO] Setting date range: 2016-06-01 to 2016-06-30
+2025-07-16 10:03:21 [INFO] Date range fields updated
+2025-07-16 10:03:21 [INFO] Industry unchanged: All
+2025-07-16 10:03:21 [INFO] Subfocus changed from None to Tariffs
+2025-07-16 10:03:21 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-16 10:03:21 [INFO] Set subfocus filter for: Tariffs (ns=gtrade)
+2025-07-16 10:03:21 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND ns=gtrade
+2025-07-16 10:03:33 [INFO] Search button clicked
+2025-07-16 10:03:33 [INFO] Results found: 75
+2025-07-16 10:03:37 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/Tariffs/2016-06-01_to_2016-06-30.csv
+2025-07-16 10:03:37 [INFO] Found 75 results - CSV saved, proceeding with charts
+2025-07-16 10:03:43 [INFO] Subfocus 'Tariffs' specified - skipping industry chart download
+2025-07-16 10:03:43 [INFO] Downloads folder already clean (no CSV files)
+2025-07-16 10:03:51 [INFO] Modify search button clicked
+2025-07-16 10:03:51 [INFO] Next iteration update complete
+2025-07-16 10:03:51 [INFO] Completed task for All from 2016-06-01 to 2016-06-30
+2025-07-16 10:03:51 [INFO] Task status updated to 1 for All/Tariffs 2016-06-01-2016-06-30
+2025-07-16 10:03:51 [INFO] ✅ Task marked as completed for All/Tariffs
+2025-07-16 10:03:51 [INFO] ✅ Task 6/1159 completed
+2025-07-16 10:03:51 [INFO] Running task for industry: All and subfocus: Supply Chain, from 2016-06-01 to 2016-06-30
+2025-07-16 10:03:51 [INFO] Task 7/1159: All/Supply Chain 2016-06-01-2016-06-30
+2025-07-16 10:03:51 [INFO] Starting scraper task for All from 2016-06-01 to 2016-06-30
+2025-07-16 10:03:51 [INFO] Next iteration: updating parameters
+2025-07-16 10:03:51 [INFO] Setting date range: 2016-06-01 to 2016-06-30
+2025-07-16 10:03:52 [INFO] Date range fields updated
+2025-07-16 10:03:52 [INFO] Industry unchanged: All
+2025-07-16 10:03:52 [INFO] Subfocus changed from Tariffs to Supply Chain
+2025-07-16 10:03:52 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND ns=gtrade
+2025-07-16 10:03:52 [INFO] Set subfocus filter for: Supply Chain (ns=cscm)
+2025-07-16 10:03:52 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:04:04 [INFO] Search button clicked
+2025-07-16 10:04:04 [INFO] Results found: 9
+2025-07-16 10:04:08 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/Supply Chain/2016-06-01_to_2016-06-30.csv
+2025-07-16 10:04:08 [INFO] Found 9 results - CSV saved, proceeding with charts
+2025-07-16 10:04:15 [INFO] Subfocus 'Supply Chain' specified - skipping industry chart download
+2025-07-16 10:04:15 [INFO] Downloads folder already clean (no CSV files)
+2025-07-16 10:04:23 [INFO] Modify search button clicked
+2025-07-16 10:04:23 [INFO] Next iteration update complete
+2025-07-16 10:04:23 [INFO] Completed task for All from 2016-06-01 to 2016-06-30
+2025-07-16 10:04:23 [INFO] Task status updated to 1 for All/Supply Chain 2016-06-01-2016-06-30
+2025-07-16 10:04:23 [INFO] ✅ Task marked as completed for All/Supply Chain
+2025-07-16 10:04:23 [INFO] ✅ Task 7/1159 completed
+2025-07-16 10:04:23 [INFO] Running task for industry: All and subfocus: None, from 2016-07-01 to 2016-07-31
+2025-07-16 10:04:23 [INFO] Task 8/1159: All/None 2016-07-01-2016-07-31
+2025-07-16 10:04:23 [INFO] Starting scraper task for All from 2016-07-01 to 2016-07-31
+2025-07-16 10:04:23 [INFO] Next iteration: updating parameters
+2025-07-16 10:04:23 [INFO] Setting date range: 2016-07-01 to 2016-07-31
+2025-07-16 10:04:23 [INFO] Date range fields updated
+2025-07-16 10:04:23 [INFO] Industry unchanged: All
+2025-07-16 10:04:23 [INFO] Subfocus changed from Supply Chain to None
+2025-07-16 10:04:23 [INFO] Reverting to broad subject categories
+2025-07-16 10:04:23 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND ns=cscm
+2025-07-16 10:04:23 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-16 10:04:35 [INFO] Search button clicked
+2025-07-16 10:04:36 [INFO] Results found: 9963
+2025-07-16 10:04:40 [INFO] Results saved to /Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data/monthly/factiva_results/All/no_subfocus/2016-07-01_to_2016-07-31.csv
+2025-07-16 10:04:40 [INFO] Found 9963 results - CSV saved, proceeding with charts
+2025-07-16 10:04:49 [INFO] Downloads folder already clean (no CSV files)
+2025-07-16 10:04:57 [INFO] Modify search button clicked
+2025-07-16 10:04:57 [INFO] Next iteration update complete
+2025-07-16 10:04:57 [INFO] Completed task for All from 2016-07-01 to 2016-07-31
+2025-07-16 10:04:57 [INFO] Task status updated to 1 for All/None 2016-07-01-2016-07-31
+2025-07-16 10:04:57 [INFO] ✅ Task marked as completed for All/None
+2025-07-16 10:04:57 [INFO] ✅ Task 8/1159 completed
+2025-07-16 10:04:57 [INFO] Running task for industry: All and subfocus: Tariffs, from 2016-07-01 to 2016-07-31
+2025-07-16 10:04:57 [INFO] Task 9/1159: All/Tariffs 2016-07-01-2016-07-31
+2025-07-16 10:04:57 [INFO] Starting scraper task for All from 2016-07-01 to 2016-07-31
+2025-07-16 10:04:57 [INFO] Next iteration: updating parameters
+2025-07-16 10:04:57 [INFO] Setting date range: 2016-07-01 to 2016-07-31
+2025-07-16 10:04:58 [INFO] Date range fields updated
+2025-07-16 10:04:58 [INFO] Industry unchanged: All
+2025-07-16 10:04:58 [INFO] Subfocus changed from None to Tariffs
+2025-07-16 10:04:58 [INFO] Current search text: rst=topuk AND la=en AND re=UK AND (ns=ccat OR ns=ecat OR ns=mcat)
+2025-07-16 10:04:58 [INFO] Set subfocus filter for: Tariffs (ns=gtrade)
+2025-07-16 10:04:58 [INFO] Set search text to: rst=topuk AND la=en AND re=UK AND ns=gtrade
