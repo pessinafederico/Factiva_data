@@ -203,3 +203,45 @@ def update_task_status(tasks_list, industry, subfocus, start_date, end_date, sta
     except Exception as e:
         logging.error(f"Error updating task status: {e}")
         return False
+    
+def create_notes_file(version, VERSION_FOLDER, start_date, end_date, granularity, recreate_tasks, industries, subfocuses, DATA_SAVE_FOLDER, TASK_FILE_PATH,log_filename,custom_notes=""):
+    """Create and save scraper configuration notes
+    
+    Args:
+        custom_notes (str): Additional custom notes to include
+    """
+    
+    notes_content = f"""# Factiva Scraper Configuration - {version}
+        Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+        ## Parameters
+        Date Range: {start_date} to {end_date}
+        Granularity: {granularity}
+        Recreate Tasks: {recreate_tasks}
+
+        ## Industries ({len(industries)} selected)
+        {chr(10).join(f"- {industry}" for industry in industries)}
+
+        ## Subfocuses ({len(subfocuses)} selected)
+        {chr(10).join(f"- {subfocus}" for subfocus in subfocuses)}
+
+        ## Paths
+        Data Folder: {DATA_SAVE_FOLDER}
+        Task File: {TASK_FILE_PATH}
+        Log File: {log_filename}
+
+        ## Notes
+        - UCL PhD Research: Firm Attention
+        - Timeframe: {(datetime.strptime(end_date, '%Y-%m-%d') - datetime.strptime(start_date, '%Y-%m-%d')).days} days
+        {f"- {custom_notes}" if custom_notes else ""}
+        """
+    
+    # Save notes file
+    notes_path = os.path.join(VERSION_FOLDER, f"config_notes_{version}.txt")
+    
+    with open(notes_path, 'w') as f:
+        f.write(notes_content)
+    
+    print(f"Notes saved: {notes_path}")
+    return notes_path
+

@@ -36,6 +36,8 @@ def init_driver():
         chrome_path,
         f"--remote-debugging-port={remote_debugging_port}",
         f"--user-data-dir={user_data_dir}",
+        "--disable-download-notification",  
+        "--disable-notifications",           
         factiva_url
     ])
     logging.info("Chrome launched. Log in manually, then press Enter to continue...")
@@ -51,6 +53,9 @@ def init_driver():
     options.add_argument("--disable-software-rasterizer")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
+    
+    # Suppress logs
+    options.add_argument("--log-level=3")
 
     # Set service with suppressed output
     logging.info("Setting up ChromeDriver service...")
@@ -199,8 +204,10 @@ def other_settings(driver):
     # Add key search terms in search box at the top
     driver.execute_script("""
         let editor = ace.edit(document.getElementsByClassName('ace_editor')[0]);
-        editor.setValue('rst=topuk');
+        editor.setValue('rst=tmnbuk'); 
     """)
+    #tmnbuk: major business news sources in the UK
+    #topuk: top newspapers UK
     
     # Remove some of the "more options"
     driver.find_element(By.XPATH, "//a[contains(text(), 'More Options')]").click()
@@ -375,6 +382,8 @@ def click_modify_search_button(driver):
         driver (webdriver): Selenium WebDriver instance.
     '''
     time.sleep(4)
+     # Close overlays first
+    safe_close_overlay(driver)
     driver.find_element(By.XPATH, '//*[@id="btnModifySearch"]').click()
     time.sleep(4)
     logging.info("Modify search button clicked")
@@ -401,29 +410,42 @@ def safe_click(driver, xpath, retries=2, wait_time=5):
 #         print("[WARN] Failed to close overlay. Continuing anyway.")
         
 def safe_close_overlay(driver):
-    primary_xpath = "//*[@id='relInfoPopupBalloon']/div[1]/div[2]"
+    """
+    Enhanced overlay closing function specifically for __overlayBackground
+    """
     try:
-        close_btn = WebDriverWait(driver, 3).until(
-            EC.element_to_be_clickable((By.XPATH, primary_xpath))
-        )
-        close_btn.click()
-        return
+        # Method 1: Remove the specific __overlayBackground element via JavaScript
+        driver.execute_script("""
+            var overlay = document.getElementById('__overlayBackground');
+            if (overlay) {
+                overlay.style.display = 'none';
+                overlay.remove();
+            }
+        """)
+        time.sleep(1)
+        logging.info("Removed __overlayBackground via JavaScript")
+    except Exception as e:
+        logging.warning(f"Failed to remove __overlayBackground: {e}")
+    
+    # Method 2: Press ESC multiple times
+    try:
+        from selenium.webdriver.common.keys import Keys
+        body = driver.find_element(By.TAG_NAME, 'body')
+        body.send_keys(Keys.ESCAPE)
+        time.sleep(0.5)
+        body.send_keys(Keys.ESCAPE)
+        time.sleep(0.5)
+        logging.info("Pressed ESC keys to close overlays")
     except:
-        logging.warning("Primary close button xpath failed, trying fallback divs")
-
-    for i in range(13, 20):
-        try:
-            xpath = f"/html/body/div[{i}]/div/div[1]/div[2]"
-            close_btn = WebDriverWait(driver, 2).until(
-                EC.element_to_be_clickable((By.XPATH, xpath))
-            )
-            close_btn.click()
-            logging.info(f"Overlay closed with fallback div[{i}]")
-            return
-        except:
-            continue
-
-    logging.warning("[WARN] Could not close overlay window after multiple strategies.")
+        pass
+    
+    # Method 3: Try clicking away from overlay area
+    try:
+        driver.execute_script("document.elementFromPoint(50, 50).click();")
+        time.sleep(1)
+    except:
+        pass
+    
 
 def wait_for_file(path, timeout=10):
     for _ in range(timeout * 2):  # check every 0.5s
@@ -436,6 +458,7 @@ def export_csv(driver, export_xpath, download_name, dest_folder, prefix, start_d
     
     try: 
         driver.switch_to.default_content()
+        safe_close_overlay(driver)
         safe_click(driver, export_xpath)
         
         WebDriverWait(driver, 5).until(

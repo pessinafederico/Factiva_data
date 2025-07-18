@@ -9,12 +9,12 @@ import logging
 import csv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from setup_utils import initialize_and_select_tasks
+from setup_utils import create_notes_file
 from setup_utils import update_task_status
 from scrape_utils import run_scraper_tasks
 from scrape_utils import init_driver
 from datetime import datetime
 import time
-
 
 # ------------------------------- 
 # SETTINGS
@@ -25,13 +25,19 @@ start_date = "2014-01-01"
 end_date = "2025-07-15"
 granularity = "monthly"
 
+# Version control - Different versions of the scraper can be maintained within the same granularity
+# If existing, "recreate" applies.
+version = "v1"
+
 # Paths
 DROPBOX_ROOT = '/Users/federicopessina/Library/CloudStorage/Dropbox/Work/UCL PhD/Research/Firm_Attention/2. Data'
-TASK_FILE_PATH = os.path.join(DROPBOX_ROOT,granularity, "industry_date_grid.csv")
-DATA_SAVE_FOLDER = os.path.join(DROPBOX_ROOT, granularity, "factiva_results")
+VERSION_FOLDER = os.path.join(DROPBOX_ROOT, granularity, version)
+os.makedirs(VERSION_FOLDER, exist_ok=True)
+TASK_FILE_PATH = os.path.join(VERSION_FOLDER, "industry_date_grid.csv")
+DATA_SAVE_FOLDER = os.path.join(VERSION_FOLDER, "factiva_results")
 
 # Parameters 
-recreate_tasks = False  # Set to True to recreate the task file
+recreate_tasks = False# Set to True to recreate the task file
 
 # Industries to scrape
 industries = [
@@ -75,6 +81,9 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 
+# Save notes doc
+create_notes_file(version, VERSION_FOLDER, start_date, end_date, granularity, recreate_tasks, industries, subfocuses, DATA_SAVE_FOLDER, TASK_FILE_PATH,log_filename,custom_notes="")
+
 # -------------------------------
 # INITIALIZE
 # -------------------------------
@@ -107,6 +116,9 @@ def reset_browser_state():
     """
     Reset browser state by going back to the original search page
     """
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.common.by import By
     global driver, first_iteration, last_industry, last_subfocus
     
     try:
@@ -125,6 +137,57 @@ def reset_browser_state():
         driver.get(factiva_url)
         time.sleep(5)
         
+        # Click Factiva link
+        factiva_link_xpath = "/html/body/primo-explore/div/prm-full-view-page/prm-full-view-cont/md-content/div[2]/prm-full-view/div/div/div/div[1]/div/div[4]/div/prm-full-view-service-container/div[2]/div/prm-alma-viewit/prm-alma-viewit-items/md-list/div/md-list-item/div[1]/div[1]/div/div/a"
+        
+        factiva_link = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, factiva_link_xpath))
+        )
+        factiva_link.click()
+        time.sleep(5)
+        print("🔄 Navigated back to Factiva search page - trying to close tabs")
+        # Wait for new tab to open, then switch to it
+        WebDriverWait(driver, 15).until(lambda d: len(d.window_handles) > 1)
+
+        # Switch to the new Factiva tab (last one opened)
+        new_tab = driver.window_handles[-1]
+        old_tab = driver.window_handles[0]
+
+        # Only proceed if we actually have 2 tabs
+        if len(driver.window_handles) >= 2:
+            driver.switch_to.window(new_tab)  # Go to new Factiva tab
+            driver.switch_to.window(old_tab)  # Go back to old tab
+            driver.close()  # Close old tab
+            driver.switch_to.window(new_tab)  # Switch to Factiva tab (now the only one)
+
+        try:
+            # Wait a moment for page to fully load
+            time.sleep(3)
+            
+            # Try to close overlay by clicking background or pressing ESC
+            driver.execute_script("""
+                // Remove overlay background if it exists
+                var overlay = document.getElementById('__overlayBackground');
+                if (overlay) overlay.style.display = 'none';
+                
+                // Also try to close any modals
+                var modals = document.querySelectorAll('[role="dialog"], .modal, .popup');
+                modals.forEach(function(modal) {
+                    modal.style.display = 'none';
+                });
+            """)
+            
+            # Press ESC key to close any remaining popups
+            from selenium.webdriver.common.keys import Keys
+            driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ESCAPE)
+            
+            time.sleep(2)
+            logging.info("✅ Overlay cleanup completed")
+            
+        except Exception as e:
+            logging.error(f"Failed to close overlay or modals: {e}")
+            print("❌ Failed to close overlay or modals - continuing anyway")
+            
         # Reset state flags
         first_iteration = True
         last_industry = None
